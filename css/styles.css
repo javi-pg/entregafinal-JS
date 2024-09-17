@@ -1,0 +1,21 @@
+body{
+    display: grid;
+    grid-template-columns: (12, 1fr) ;
+    grid-template-rows: (5, auto);
+}
+.titulo
+{   grid-row: 1/1;
+    grid-column: 4/9;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    color: rgb(186, 132, 237);
+    font-size: xx-large;
+}
+.parrafo1{  font-family: Georgia, 'Times New Roman', Times, serif;
+    padding: 5%;
+    grid-row: 2/3;
+    grid-column: 3/10;
+    text-align: justify;
+    color: rgb(139, 102, 174);
+    font-size: 110%;
+}
