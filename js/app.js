@@ -4,8 +4,8 @@ alert ("Hola " + nombreUsuario + " bienvenid@ al comparador de precios");
 const supermercados =["Supermercado1", "Supermercado2", "Supermercado3"];
 const productos = ["arroz", "fideos", "azucar", "envío"];
 const preciosSuper1 = [2990 , 1080, 1390, 0]; //precios en supermercado 1
-const preciosSuper2 = [2590 , 770, 1490, 1000]; //precios en supermercado 2
-const preciosSuper3 = [2050, 890, 1290, 1500]; //precios en supermercado 3 
+const preciosSuper2 = [2490 , 770, 1490, 1000]; //precios en supermercado 2
+const preciosSuper3 = [1950, 890, 1290, 1500]; //precios en supermercado 3 
 let flag = true;
 
 while (flag) {
