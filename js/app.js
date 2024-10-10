@@ -25,7 +25,7 @@ let comparacion = `Producto: ${producto}, Supermercado1: ${preciosSuper1[product
         historialComparaciones.push(comparacion);
 
         const resultadoParcial = document.createElement("li");
-        resultadoParcial.textContent = `Comparación para ${producto}: Supermercado1: ${montosTotales[0]}, Supermercado2: ${montosTotales[1]}, Supermercado3: ${montosTotales[2]}`;
+        resultadoParcial.textContent = `Comparación agregando ${producto}: Supermercado1: ${montosTotales[0]}, Supermercado2: ${montosTotales[1]}, Supermercado3: ${montosTotales[2]}`;
         listaResultados.appendChild(resultadoParcial);
     });
     btnFinalizar.addEventListener("click", function () {
