@@ -4,18 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>¿Dónde compro?</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="./css/styles.css">
-
 </head>
 <body>
 <h1 class="titulo">¿Dónde compro?</h1>
 <div class="formulario" id="formulario">
     <label for="producto">Selecciona un producto para comparar:</label>
     <select id="producto">
-        <option value="arroz">Arroz</option>
-        <option value="fideos">Fideos</option>
-        <option value="azucar">Azúcar</option>
+        <option value="arroz" data-img="images/arroz.jpeg" >Arroz</option>
+        <option value="fideos" data-img="images/Fideos.webp">Fideos</option>
+        <option value="azucar" data-img="images/azucar.jpeg">Azúcar</option>
     </select>
+<div id="productoImagen">
+        <img id="imagenProducto" src="images/arroz.jpeg" alt="Producto seleccionado" style="width:100px; height:100px;">
+</div>
     <button id="comparar">Comparar</button>
 </div>
 <div class="parciales" id="resultados">
@@ -23,14 +26,18 @@
     <ul id="listaResultados"></ul>
 </div>
 <button class="finalizar" id="finalizar">Finalizar Comparación</button>
-<div class="historial" id="historial">
-    <h2>Historial de Comparaciones</h2>
-    <ul id="listaHistorial"></ul>
-</div>
+
 <p class="parrafo1">Este simulador tiene por objetivo comparar los precios de la misma lista en distintos supermercados, considerando el valor de los productos
     y el precio de envío ya que existen ocasiones en las que estos valores se van compensando el precio final (en un lugar hay un producto que es más económico y otro más caro).
-    En esta ocasión por la falta de herramientas, se ingresarán manualmente los precios.
+   Esta plataforma permite agregar solo tres tipos de productos, considera el envío asignado previamente y permite acceder a un historial presente en otra página para no llenar de información la página principal.
 </p>
+
+<button class="verHistorial" id="verHistorial">Ver Historial</button>
+<script>
+    document.getElementById("verHistorial").addEventListener("click", function() {
+        window.location.href = "historial.html";
+    });
+</script>
 <script src="./js/app.js"></script>
 </body>
 </html>

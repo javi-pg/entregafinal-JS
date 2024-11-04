@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-const nombreUsuario = prompt("Por favor ingrese su nombre:");
-alert ("Hola " + nombreUsuario + " bienvenid@ al comparador de precios");
 let montosTotales = [0,0,0];
-let historialComparaciones = []; 
-
+let historialComparaciones = JSON.parse(localStorage.getItem("historialComparaciones")) || []; 
 let envioAgregado = [false, false, false]; 
 
 const productos = ["arroz", "fideos", "azucar", "envío"];
@@ -16,27 +13,55 @@ const btnComparar = document.getElementById("comparar");
 const btnFinalizar = document.getElementById("finalizar");
 const listaResultados = document.getElementById("listaResultados");
 const listaHistorial = document.getElementById("listaHistorial");
+// Mostrar imagen según el producto seleccionado
+  productoSelect.addEventListener("change", function () {
+    const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+    const imagePath = selectedOption.getAttribute("data-img");
+    imagenProducto.src = imagePath;
+});
+
+//Pedir nombre de usuario
+Swal.fire({
+    title: "¡Hola!",
+    text: 'Por favor, ingrese su nombre:',
+    input: 'text',
+    confirmButtonText: 'Aceptar',
+    allowOutsideClick: false,
+    preConfirm: (value) => {
+        if (!value) {
+           Swal.showValidationMessage("Debe ingresar su nombre para continuar"); //No deja continuar sin ingresar el nombre 
+        }
+        return value;
+    }
+}).then((result) => {
+    if (result.isConfirmed && result.value) {
+        nombreUsuario = result.value;
+        Swal.fire({
+            title: `Hola ${nombreUsuario}`,
+            text: "Bienvenid@ al comparador de precios",
+            icon: 'success'
+        });
+    }
+});
 
 btnComparar.addEventListener("click", function () {
     const producto = productoSelect.value;
     montosTotales = actualizarTotales(productos, preciosSuper1, preciosSuper2, preciosSuper3, producto, montosTotales);
 
-let comparacion = `Producto: ${producto}, Supermercado1: ${preciosSuper1[productos.indexOf(producto)]}, Supermercado2: ${preciosSuper2[productos.indexOf(producto)]}, Supermercado3: ${preciosSuper3[productos.indexOf(producto)]}`;
-        historialComparaciones.push(comparacion);
+//Guardar historial
+    let comparacion =`Producto: ${producto}, Super1: ${preciosSuper1[productos.indexOf(producto)]}, Super2: ${preciosSuper2[productos.indexOf(producto)]}, Super3: ${preciosSuper3[productos.indexOf(producto)]}`;
+    historialComparaciones.push(comparacion);
+    localStorage.setItem("historialComparaciones", JSON.stringify(historialComparaciones));
 
-        const resultadoParcial = document.createElement("li");
-        resultadoParcial.textContent = `Comparación agregando ${producto}: Supermercado1: ${montosTotales[0]}, Supermercado2: ${montosTotales[1]}, Supermercado3: ${montosTotales[2]}`;
-        listaResultados.appendChild(resultadoParcial);
+//Mostrar resultado parcial 
+    const resultadoParcial = document.createElement("li");
+    resultadoParcial.textContent = `Comparación agregando ${producto}: Super1: ${montosTotales[0]}, Super2: ${montosTotales[1]}, Super3: ${montosTotales[2]}`;
+    listaResultados.appendChild(resultadoParcial);
     });
     btnFinalizar.addEventListener("click", function () {
         mostrarMejorPrecio(montosTotales, nombreUsuario);
         mostrarHistorial(historialComparaciones);
     });
-
-btnComparar.addEventListener("click", function () {
-    const producto = productoSelect.value;
-    montosTotales = actualizarTotales(productos, preciosSuper1, preciosSuper2, preciosSuper3, producto, montosTotales);
-});
 
 function actualizarTotales (productos, preciosSuper1, preciosSuper2, preciosSuper3, producto, montosTotales) {
     let indice = productos.indexOf(producto)
@@ -56,21 +81,25 @@ function actualizarTotales (productos, preciosSuper1, preciosSuper2, preciosSupe
         montosTotales[2] += preciosSuper3[3]; // Agrega envío supermercado 3
         envioAgregado[2] = true;
     }
-    return montosTotales
+    return montosTotales;
 }
 
-function mostrarMejorPrecio(montosTotales, nombreUsuario) {
+function mostrarMejorPrecio(montosTotales) {
     let mensaje = "";
     if (montosTotales[0] < montosTotales[1] && montosTotales[0] < montosTotales[2]) {
-        mensaje = nombreUsuario + ", te recomiendo comprar en Supermercado 1";
+        mensaje = "Te recomiendo comprar en Supermercado 1";
     } else if (montosTotales[1] < montosTotales[0] && montosTotales[1] < montosTotales[2]) {
-        mensaje = nombreUsuario + ", te recomiendo comprar en Supermercado 2";
+        mensaje = "Te recomiendo comprar en Supermercado 2";
     } else if (montosTotales[2] < montosTotales[1] && montosTotales[2] < montosTotales[0]) {
-        mensaje = nombreUsuario + ", te recomiendo comprar en Supermercado 3";
+        mensaje = "Te recomiendo comprar en Supermercado 3";
     } else {
-        mensaje = nombreUsuario + ", los precios son iguales en varios supermercados.";
+        mensaje = "Los precios son iguales en varios supermercados.";
     }
-    alert(mensaje);
+    Swal.fire({
+        title: "Resultado",
+        text: mensaje,
+        icon: 'info'
+    });
 }
 function mostrarHistorial(historialComparaciones) {
     listaHistorial.innerHTML = "";
