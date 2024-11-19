@@ -1,6 +1,6 @@
 {
-  "productos": ["arroz", "fideos", "azucar"],
-  "preciosSuper1": [10, 15, 20, 5], 
-  "preciosSuper2": [11, 14, 19, 5], 
-  "preciosSuper3": [9, 16, 18, 5]
+  "arroz": {"preciosSuper1": 2990, "preciosSuper2": 2490, "preciosSuper3": 1950}, 
+  "fideos": {"preciosSuper1": 1080, "preciosSuper2": 770, "preciosSuper3": 890}, 
+  "azucar": {"preciosSuper1": 1390, "preciosSuper2": 1490, "preciosSuper3": 1290}, 
+  "envioAgregado": {"preciosSuper1": 0, "preciosSuper2": 1000, "preciosSuper3": 1500}
 }
