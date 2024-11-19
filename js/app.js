@@ -1,18 +1,36 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+await cargarDatos();
 let montosTotales = [0,0,0];
 let historialComparaciones = JSON.parse(localStorage.getItem("historialComparaciones")) || []; 
 let envioAgregado = [false, false, false]; 
+const imagenProducto = document.getElementById("imagenProducto");
+let nombreUsuario = "";
 
-const productos = ["arroz", "fideos", "azucar", "envío"];
-const preciosSuper1 = [2990 , 1080, 1390, 0]; //precios en supermercado 1
-const preciosSuper2 = [2490 , 770, 1490, 1000]; //precios en supermercado 2
-const preciosSuper3 = [1950, 890, 1290, 1500]; //precios en supermercado 3 
+let productos = [];
+let preciosSuper1 = [];
+let preciosSuper2 = [];
+let preciosSuper3 = [];
+//fetch
+async function cargarDatos() {
+    try {
+        const response = await fetch('precios.json');
+        console.log('Estado del fetch:', response.status); 
+        if (!response.ok) throw new Error('Error al cargar los datos');
+        const data = await response.json();
+        console.log('Datos cargados:', data); 
+        productos = data.productos;
+        preciosSuper1 = data.preciosSuper1;
+        preciosSuper2 = data.preciosSuper2;
+        preciosSuper3 = data.preciosSuper3;
+    } catch (error) {
+        console.error("Hubo un problema al cargar los datos:", error);
+    }
+}
 
 const productoSelect = document.getElementById("producto");
 const btnComparar = document.getElementById("comparar");
 const btnFinalizar = document.getElementById("finalizar");
 const listaResultados = document.getElementById("listaResultados");
-const listaHistorial = document.getElementById("listaHistorial");
 // Mostrar imagen según el producto seleccionado
   productoSelect.addEventListener("change", function () {
     const selectedOption = productoSelect.options[productoSelect.selectedIndex];
@@ -29,7 +47,7 @@ Swal.fire({
     allowOutsideClick: false,
     preConfirm: (value) => {
         if (!value) {
-           Swal.showValidationMessage("Debe ingresar su nombre para continuar"); //No deja continuar sin ingresar el nombre 
+           Swal.showValidationMessage("Debe ingresar su nombre para continuar"); //No continuar sin ingresar el nombre 
         }
         return value;
     }
@@ -44,9 +62,34 @@ Swal.fire({
     }
 });
 
-btnComparar.addEventListener("click", function () {
-    const producto = productoSelect.value;
-    montosTotales = actualizarTotales(productos, preciosSuper1, preciosSuper2, preciosSuper3, producto, montosTotales);
+btnComparar.addEventListener("click", async function () {
+    if (productos.length === 0 || preciosSuper1.length === 0) {
+            Swal.fire({
+                title: "Error",
+                text: "Los datos aún no están disponibles. Intenta nuevamente.",
+                icon: "error",
+            });
+            return;
+        }
+    
+        const producto = productoSelect.value;
+        montosTotales = actualizarTotales(productos, preciosSuper1, preciosSuper2, preciosSuper3, producto, montosTotales);
+    
+        // Guardar historial
+        let comparacion = {
+            producto: producto,
+            supermercado1: preciosSuper1[productos.indexOf(producto)],
+            supermercado2: preciosSuper2[productos.indexOf(producto)],
+            supermercado3: preciosSuper3[productos.indexOf(producto)],
+        };
+        historialComparaciones.push(comparacion);
+        localStorage.setItem("historialComparaciones", JSON.stringify(historialComparaciones));
+    
+        // Mostrar resultado parcial
+        const resultadoParcial = document.createElement("li");
+        resultadoParcial.textContent = `Comparación agregando ${producto}: Super1: ${montosTotales[0]}, Super2: ${montosTotales[1]}, Super3: ${montosTotales[2]}`;
+        listaResultados.appendChild(resultadoParcial);
+    });
 
 //Guardar historial
     let comparacion =`Producto: ${producto}, Super1: ${preciosSuper1[productos.indexOf(producto)]}, Super2: ${preciosSuper2[productos.indexOf(producto)]}, Super3: ${preciosSuper3[productos.indexOf(producto)]}`;
@@ -57,14 +100,19 @@ btnComparar.addEventListener("click", function () {
     const resultadoParcial = document.createElement("li");
     resultadoParcial.textContent = `Comparación agregando ${producto}: Super1: ${montosTotales[0]}, Super2: ${montosTotales[1]}, Super3: ${montosTotales[2]}`;
     listaResultados.appendChild(resultadoParcial);
-    });
+
     btnFinalizar.addEventListener("click", function () {
         mostrarMejorPrecio(montosTotales, nombreUsuario);
         mostrarHistorial(historialComparaciones);
     });
+    });
 
 function actualizarTotales (productos, preciosSuper1, preciosSuper2, preciosSuper3, producto, montosTotales) {
-    let indice = productos.indexOf(producto)
+    return new Promise((resolve, reject) => {
+        try {
+            let indice = productos.indexOf(producto);
+            if (indice === -1) throw new Error("Producto no encontrado");
+
     montosTotales[0] += preciosSuper1[indice];
     montosTotales[1] += preciosSuper2[indice];
     montosTotales[2] += preciosSuper3[indice];
@@ -82,7 +130,12 @@ function actualizarTotales (productos, preciosSuper1, preciosSuper2, preciosSupe
         envioAgregado[2] = true;
     }
     return montosTotales;
+} catch (error) {
+    reject(error);
+    }
+});
 }
+
 
 function mostrarMejorPrecio(montosTotales) {
     let mensaje = "";
@@ -101,12 +154,14 @@ function mostrarMejorPrecio(montosTotales) {
         icon: 'info'
     });
 }
-function mostrarHistorial(historialComparaciones) {
+
+async function mostrarHistorial() {
     listaHistorial.innerHTML = "";
-    historialComparaciones.forEach((comparacion) => {
+    const historial = await Promise.resolve(historialComparaciones);
+
+    historial.forEach((comparacion) => {
         const itemHistorial = document.createElement("li");
-        itemHistorial.textContent = comparacion;
+        itemHistorial.textContent = `Producto: ${comparacion.producto}, Super1: ${comparacion.supermercado1}, Super2: ${comparacion.supermercado2}, Super3: ${comparacion.supermercado3}`;
         listaHistorial.appendChild(itemHistorial);
     });
 }
-});

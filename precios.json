@@ -1,0 +1,6 @@
+{
+  "productos": ["arroz", "fideos", "azucar"],
+  "preciosSuper1": [10, 15, 20, 5], 
+  "preciosSuper2": [11, 14, 19, 5], 
+  "preciosSuper3": [9, 16, 18, 5]
+}
